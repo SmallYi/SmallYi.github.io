@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="初夏">
+
+
+
+
+
+<title>Linux文件打补丁命令 | 初夏de博客</title>
+
+
+
+    <link rel="icon" href="/panda.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">初夏de博客</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">初夏de博客</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Linux文件打补丁命令</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">初夏</a><br>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十一月 10, 2023&nbsp;&nbsp;8:26:20</a>
+                        </span><br>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%99%E7%A8%8B/">教程</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">patch [选项] [源代码文件] [补丁文件]</span><br></pre></td></tr></table></figure>
+
+<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-p&lt;num&gt;：指定路径剥离级别，用于去除补丁文件中的路径前缀。通常在补丁文件中会包含源代码文件的相对路径，使用该选项可以去除这些路径前缀。剥离路径级别表示从补丁文件中剥离的路径层级数。</span><br><span class="line">-d &lt;目录&gt;：指定工作目录，用于在指定目录下执行补丁操作。</span><br><span class="line">-N：允许添加新文件，即如果补丁文件中包含新文件，patch命令会将其添加到源代码中。</span><br><span class="line">-R：撤销已应用的补丁，即将补丁文件中的修改恢复到源代码文件中。</span><br><span class="line">-s：安静模式，即不显示详细的操作信息。</span><br><span class="line">-i &lt;文件&gt;：指定补丁文件的路径。</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><h3 id="Linux补丁生成"><a href="#Linux补丁生成" class="headerlink" title="Linux补丁生成"></a>Linux补丁生成</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 比较xxx/aaa和yyy/bbb目录及子目录所有源码差异</span></span><br><span class="line"><span class="comment"># 参数解释:</span></span><br><span class="line"><span class="comment"># -u:显示有差异的前后3行信息</span></span><br><span class="line"><span class="comment"># -p:显示代码所在的c函数的信息</span></span><br><span class="line"><span class="comment"># -r:递归所有子目录</span></span><br><span class="line"><span class="comment"># -N:如果某个文件缺少，当作空文件对比</span></span><br><span class="line">diff -uprN xxx/aaa/  yyy/bbb &gt; mypatch_2</span><br></pre></td></tr></table></figure>
+
+<h3 id="Linux补丁应用与撤销"><a href="#Linux补丁应用与撤销" class="headerlink" title="Linux补丁应用与撤销"></a>Linux补丁应用与撤销</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 该命令将补丁文件patchfile应用到当前目录下的源代码文件中</span></span><br><span class="line">patch -p1 &lt; patchfile</span><br><span class="line">patch -p1 -i patchfile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 指定工作目录应用补丁</span></span><br><span class="line">patch -d /path/to/directory -p1 &lt; patchfile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 撤销已应用的补丁，将补丁文件patchfile中的修改恢复到源代码文件中</span></span><br><span class="line">patch -R -p1 &lt; patchfile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 允许添加新文件，应用补丁文件</span></span><br><span class="line">patch -N -p1 &lt; patchfile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在安静模式下应用补丁文件，不显示详细的输出信息</span></span><br><span class="line">patch -s -p1 &lt; patchfile</span><br></pre></td></tr></table></figure>
+
+<h3 id="Git补丁生成"><a href="#Git补丁生成" class="headerlink" title="Git补丁生成"></a>Git补丁生成</h3><h4 id="git-format-patch"><a href="#git-format-patch" class="headerlink" title="git format-patch"></a>git format-patch</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#生成最近的1次commit的patch，输出到一个指定位置的指定文件</span></span><br><span class="line">git format-patch HEAD^ --stdout &gt; fixed.patch</span><br><span class="line"> </span><br><span class="line"><span class="comment">#生成最近的2次commit的patch</span></span><br><span class="line">git format-patch HEAD^^ --stdout &gt; fixed.patch</span><br><span class="line"></span><br><span class="line"><span class="comment">#生成最近的3次commit的patch</span></span><br><span class="line">git format-patch HEAD^^^ --stdout &gt; fixed.patch</span><br><span class="line"></span><br><span class="line"><span class="comment">#生成两个commit间的修改的patch（包含两个commit. &lt;r1&gt;和&lt;r2&gt;都是具体的commit编号)</span></span><br><span class="line">git format-patch &lt;r1&gt;..&lt;r2&gt; --stdout &gt; fixed.patch</span><br><span class="line"></span><br><span class="line"><span class="comment">#生成单个commit的patch</span></span><br><span class="line">git format-patch -1 &lt;r1&gt; --stdout &gt; fixed.patch</span><br><span class="line"></span><br><span class="line"><span class="comment">#生成某commit以来的修改patch（不包含该commit）</span></span><br><span class="line">git format-patch &lt;r1&gt; --stdout &gt; fixed.patch</span><br><span class="line"></span><br><span class="line"><span class="comment">#生成从根到r1提交的所有patch</span></span><br><span class="line">git format-patch --root &lt;r1&gt; --stdout &gt; fixed.patch</span><br></pre></td></tr></table></figure>
+
+<h4 id="git-diff"><a href="#git-diff" class="headerlink" title="git diff"></a>git diff</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看尚未暂存的文件更新了哪些部分</span></span><br><span class="line"><span class="comment"># 此命令比较的是工作目录(Working tree)和暂存区域快照(index)之间的差异</span></span><br><span class="line"><span class="comment"># 也就是修改之后还没有暂存起来的变化内容</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果没有git add,此时暂存区没有文件，则不会比较新增的文件差异</span></span><br><span class="line"><span class="comment"># 而git add之后，工作区和暂存区没有差别，则不会有差异产生</span></span><br><span class="line">git diff &gt; fixed.patch</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看已经暂存起来的文件(staged)和上次提交时的快照之间(HEAD)的差异</span></span><br><span class="line"><span class="comment"># 显示的是下一次 commit 时会提交到 HEAD 的内容(不带 -a 情况下)</span></span><br><span class="line"><span class="comment"># 首先暂存所有的修改包括新增，再生成完整的patch</span></span><br><span class="line">git add .</span><br><span class="line">git diff --cached &gt; fixed.patch</span><br><span class="line"></span><br><span class="line"><span class="comment"># 比较「给定提交 ID」与「工作区」的差异。</span></span><br><span class="line"><span class="comment"># 如果省略 commit，那么，就是默认指 HEAD</span></span><br><span class="line">git diff CommitID &gt; fixed.patch</span><br><span class="line"></span><br><span class="line"><span class="comment"># 比较指定的两次提交 「commit1」与 「commit2」的差异。</span></span><br><span class="line">git diff commit1 commit2</span><br><span class="line"></span><br><span class="line"><span class="comment"># git diff提示filemode变化，文件chmod后其文件某些位是改变了的</span></span><br><span class="line"><span class="comment"># 如果严格的比较原文件和chmod后的文件，两者是有区别的，</span></span><br><span class="line"><span class="comment"># 但是源代码通常只关心文本内容，因此chmod产生的变化应该忽略</span></span><br><span class="line">git config --add core.filemode <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示有多少行发生变化，简洁的展示差异；</span></span><br><span class="line">--<span class="built_in">stat</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="git-status"><a href="#git-status" class="headerlink" title="git status"></a>git status</h4><ul>
+<li>查看已修改和新增的文件状态</li>
+</ul>
+<h4 id="git-reset"><a href="#git-reset" class="headerlink" title="git reset"></a>git reset</h4><ul>
+<li>重置取消git add添加到暂存区的变更</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>初夏</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://smallyi.github.io/2023/11/10/Tutorials/linux_patch/">http://smallyi.github.io/2023/11/10/Tutorials/linux_patch/</a></span>
+                    </p>
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Linux/"># Linux</a>
+                    
+                        <a href="/tags/patch/"># patch</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2023/11/08/Tutorials/markdown_image/">markdown图片添加设置</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 初夏 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
