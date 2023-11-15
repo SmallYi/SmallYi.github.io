@@ -13,7 +13,7 @@
 
 
 
-<title>Word页眉页脚编辑 | 初夏de博客</title>
+<title>Syzkaller源码阅读笔记 | 初夏de博客</title>
 
 
 
@@ -196,7 +196,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">Word页眉页脚编辑</h1>
+            <h1 class="post-title">Syzkaller源码阅读笔记</h1>
             
                 <div class="post-meta">
                     
@@ -205,14 +205,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">十一月 8, 2023&nbsp;&nbsp;10:53:47</a>
+                        Date: <a href="#">十一月 15, 2023&nbsp;&nbsp;10:14:44</a>
                         </span><br>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E6%95%99%E7%A8%8B/">教程</a>
+                                <a href="/categories/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">阅读笔记</a>
                             
                         </span>
                     
@@ -222,22 +222,10 @@
 
         <div class="post-content">
             <h2 id="参考网址"><a href="#参考网址" class="headerlink" title="参考网址"></a>参考网址</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://jingyan.baidu.com/article/c33e3f48dc880aab14cbb53c.html">Word中怎么设置页眉页脚从任意页开始</a></li>
-<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/362949370">Word中怎么删除页眉页脚上的横线</a></li>
+<li><a target="_blank" rel="noopener" href="https://bsauce.github.io/2022/05/13/syzkaller1/">bsauce: syzkaller 源码阅读笔记1（syz-extract &amp; syz-sysgen）</a></li>
+<li><a target="_blank" rel="noopener" href="https://bsauce.github.io/2022/05/14/syzkaller2/">bsauce: syzkaller 源码阅读笔记2（syz-manager）</a></li>
+<li><a target="_blank" rel="noopener" href="https://bsauce.github.io/2022/05/15/syzkaller3/">bsauce: syzkaller 源码阅读笔记3（syz-fuzzer）</a></li>
 </ul>
-<h3 id="单独设置页眉页脚"><a href="#单独设置页眉页脚" class="headerlink" title="单独设置页眉页脚"></a>单独设置页眉页脚</h3><blockquote>
-<p>在Word中，默认为一节，每节的页码是连续的，若想在一个Word文档中，前二页不设页眉页脚，从第三页开始设置页码，必须插入分节符，使其分节，这样就可以单独设置页眉页脚。</p>
-</blockquote>
-<ol>
-<li>布局 - 分隔符 - <strong>分节符</strong></li>
-<li>页眉页脚处双击 - 取消链接到前一节</li>
-<li>可以在页眉页脚插入图形（比如横线分割）</li>
-</ol>
-<h3 id="删除页眉页脚上的横线"><a href="#删除页眉页脚上的横线" class="headerlink" title="删除页眉页脚上的横线"></a>删除页眉页脚上的横线</h3><ol>
-<li><strong>清除所有格式</strong>：双击页眉进入页眉编辑状态 - 选中内容 - 开始 - 清除所有格式 - 横线就删除了。（不过此方法会清除你设置好页眉的所有格式</li>
-<li><strong>快捷键</strong>：双击页眉进入页眉编辑状态 - 按快捷键<strong>Ctrl+Shift+N</strong> - 横线就删除了。</li>
-<li><strong>设置无框线</strong>：双击页眉进入页眉编辑状态 - 选中内容 - 开始 - 段落 - 边框 - 无框线 - 横线就删除了。（取消边框线以后，我们可以发现，原先的格式还在，所以，该方法不仅可以删除边框线，而且还能够保留页眉上的格式。</li>
-</ol>
 
         </div>
 
@@ -252,7 +240,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="http://smallyi.github.io/2023/11/08/Tutorials/word-header-footer-editing/">http://smallyi.github.io/2023/11/08/Tutorials/word-header-footer-editing/</a></span>
+                        <span><a href="http://smallyi.github.io/2023/11/15/ProgramAnalysis/Fuzzing/Syzkaller_SrcCode/">http://smallyi.github.io/2023/11/15/ProgramAnalysis/Fuzzing/Syzkaller_SrcCode/</a></span>
                     </p>
                 
                 
@@ -266,9 +254,11 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/Word/"># Word</a>
+                        <a href="/tags/Syzkaller/"># Syzkaller</a>
                     
-                        <a href="/tags/%E9%A1%B5%E7%9C%89%E9%A1%B5%E8%84%9A/"># 页眉页脚</a>
+                        <a href="/tags/fuzzing/"># fuzzing</a>
+                    
+                        <a href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/"># 源码阅读</a>
                     
                         
                 </span>
@@ -281,10 +271,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2023/11/08/Tutorials/clash_for_linux/">Linux平台clash安装</a>
             
-            
-            <a class="next" rel="next" href="/2023/10/31/Tutorials/blog_build/">Blog创建</a>
+            <a class="next" rel="next" href="/2023/11/10/Tutorials/linux_patch/">Linux文件打补丁命令</a>
             
         </section>
 
