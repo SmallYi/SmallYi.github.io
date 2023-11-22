@@ -13,7 +13,7 @@
 
 
 
-<title>Syzkaller源码阅读笔记 | 初夏de博客</title>
+<title>Git 操作命令 | 初夏de博客</title>
 
 
 
@@ -196,7 +196,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">Syzkaller源码阅读笔记</h1>
+            <h1 class="post-title">Git 操作命令</h1>
             
                 <div class="post-meta">
                     
@@ -205,14 +205,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">十一月 15, 2023&nbsp;&nbsp;10:14:44</a>
+                        Date: <a href="#">十一月 22, 2023&nbsp;&nbsp;10:11:12</a>
                         </span><br>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">阅读笔记</a>
+                                <a href="/categories/%E6%95%99%E7%A8%8B/">教程</a>
                             
                         </span>
                     
@@ -221,13 +221,28 @@
         </header>
 
         <div class="post-content">
-            <h2 id="参考网址"><a href="#参考网址" class="headerlink" title="参考网址"></a>参考网址</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://bsauce.github.io/2022/05/13/syzkaller1/">bsauce: syzkaller 源码阅读笔记1（syz-extract &amp; syz-sysgen）</a></li>
-<li><a target="_blank" rel="noopener" href="https://bsauce.github.io/2022/05/14/syzkaller2/">bsauce: syzkaller 源码阅读笔记2（syz-manager）</a></li>
-<li><a target="_blank" rel="noopener" href="https://bsauce.github.io/2022/05/15/syzkaller3/">bsauce: syzkaller 源码阅读笔记3（syz-fuzzer）</a></li>
-<li><a target="_blank" rel="noopener" href="https://arttnba3.cn/2021/11/24/FUZZ-0X01-SYZKALLER-I/#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86">arttnba3: syzkaller - I：基本使用方法</a></li>
-<li><a target="_blank" rel="noopener" href="https://arttnba3.cn/2023/03/02/FUZZ-0X02-SYZKALLER-II_SOURCE_SYZMANAGER/">arttnba3: syzkaller - II：syz-manager源码分析</a></li>
-<li><a target="_blank" rel="noopener" href="https://arttnba3.cn/2023/09/27/FUZZ-0X03-SYZKALLER-III_SOURCE_SYZFUZZER/">arttnba3: syzkaller - III：syz-fuzzer 源码分析</a></li>
+            <h2 id="git-查看操作"><a href="#git-查看操作" class="headerlink" title="git 查看操作"></a>git 查看操作</h2><ul>
+<li><a target="_blank" rel="noopener" href="http://www.mobiletrain.org/about/BBS/159918.html">git 查看操作记录</a></li>
+<li>使用图形化界面工具 <strong>gitk</strong> 来更直观地查看操作记录  <p align = "center">    
+      <img  src="/image/gitk.png"/>
+  </p></li>
+<li>通过 <strong>git log</strong> 命令可以查看提交历史<ul>
+<li><em>git log path&#x2F;to&#x2F;file</em> 可以列出该文件的所有提交记录</li>
+<li><em>git log -n</em> 命令，其中 n 是想要查看的记录数量</li>
+<li>使用 <em>git log –merges</em> 命令来查看分支的合并历史</li>
+</ul>
+</li>
+<li>使用 <strong>git show</strong> 命令可以查看单个提交的详细信息</li>
+<li>通过 <strong>git diff</strong> 命令可以比较提交之间的差异<ul>
+<li><em>git diff commit1 commit2</em> 可以显示 commit1 和 commit2 之间的差异</li>
+</ul>
+</li>
+<li>使用 <strong>git blame</strong> 命令可以逐行查看文件的修改历史</li>
+</ul>
+<h2 id="git-常用命令速查表"><a href="#git-常用命令速查表" class="headerlink" title="git 常用命令速查表"></a>git 常用命令速查表</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/uytguytgf/article/details/128563314">git 常用命令速查表</a>  <p align = "center">    
+      <img  src="/image/git_op.png"/>
+  </p></li>
 </ul>
 
         </div>
@@ -243,7 +258,7 @@
                 
                     <p class="copyright-item">
                         <span>Permalink:</span>
-                        <span><a href="http://smallyi.github.io/2023/11/15/ProgramAnalysis/Fuzzing/Syzkaller_SrcCode/">http://smallyi.github.io/2023/11/15/ProgramAnalysis/Fuzzing/Syzkaller_SrcCode/</a></span>
+                        <span><a href="http://smallyi.github.io/2023/11/22/Tutorials/git_operations/">http://smallyi.github.io/2023/11/22/Tutorials/git_operations/</a></span>
                     </p>
                 
                 
@@ -257,11 +272,7 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/Syzkaller/"># Syzkaller</a>
-                    
-                        <a href="/tags/fuzzing/"># fuzzing</a>
-                    
-                        <a href="/tags/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/"># 源码阅读</a>
+                        <a href="/tags/Git/"># Git</a>
                     
                         
                 </span>
@@ -274,10 +285,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2023/11/22/Tutorials/git_operations/">Git 操作命令</a>
             
-            
-            <a class="next" rel="next" href="/2023/11/10/Tutorials/linux_patch/">Linux文件打补丁命令</a>
+            <a class="next" rel="next" href="/2023/11/15/ProgramAnalysis/Fuzzing/Syzkaller_SrcCode/">Syzkaller源码阅读笔记</a>
             
         </section>
 
