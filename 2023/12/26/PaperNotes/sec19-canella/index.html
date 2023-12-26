@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="初夏">
+
+
+
+
+
+<title>【论文笔记】对瞬时执行攻击和防御的系统评估 | 初夏de博客</title>
+
+
+
+    <link rel="icon" href="/panda.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">初夏de博客</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">初夏de博客</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">【论文笔记】对瞬时执行攻击和防御的系统评估</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">初夏</a><br>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">十二月 26, 2023&nbsp;&nbsp;16:30:30</a>
+                        </span><br>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">论文笔记</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="文章信息"><a href="#文章信息" class="headerlink" title="文章信息"></a>文章信息</h2><h3 id="标题：A-Systematic-Evaluation-of-Transient-Execution-Attacks-and-Defenses"><a href="#标题：A-Systematic-Evaluation-of-Transient-Execution-Attacks-and-Defenses" class="headerlink" title="标题：A Systematic Evaluation of Transient Execution Attacks and Defenses"></a>标题：A Systematic Evaluation of Transient Execution Attacks and Defenses</h3><h2 id="相关链接"><a href="#相关链接" class="headerlink" title="相关链接"></a>相关链接</h2><p><a target="_blank" rel="noopener" href="https://www.usenix.org/conference/usenixsecurity19/presentation/canella">U会官网</a><br><a target="_blank" rel="noopener" href="https://www.usenix.org/system/files/sec19-canella.pdf">PDF链接</a><br><a target="_blank" rel="noopener" href="https://securitygossip.com/blog/2019/11/13/a-systematic-evaluation-of-transient-execution/">解读博客</a><br><a target="_blank" rel="noopener" href="https://meltdownattack.com/">Spectre&amp;Meltdown</a></p>
+<h2 id="主要贡献"><a href="#主要贡献" class="headerlink" title="主要贡献"></a>主要贡献</h2><h3 id="瞬态执行攻击分类"><a href="#瞬态执行攻击分类" class="headerlink" title="瞬态执行攻击分类"></a>瞬态执行攻击分类</h3><p>攻击主要分为两类：</p>
+<ol>
+<li>第一类是利用数据流或控制流的错误预测（Misprediction）实现的攻击（在预测错误的分支下执行瞬态指令），该类型的攻击叫做 <em>Spectre</em>；</li>
+<li>另一类是利用出错指令（Faulting Instruction）实现攻击（在出错指令后部署瞬态指令），该类型的攻击叫做 <em>Meltdown</em>。</li>
+</ol>
+<p>这两个类型的攻击所利用的 CPU 特性不同，因此，它们的攻击范围和防御方法也各不相同。</p>
+<ol>
+<li><strong>Spectre</strong> 类型的攻击是指：瞬态指令只能访问&#x2F;计算应用可以访问的数据，因此，它可以在瞬态执行中绕过软件定义的安全策略（例如：边界检查、内存写入等），从而把程序中的秘密信息泄露出去。也就是说，攻击者可以诱导（Steering）受害者在瞬态执行过程中访问&#x2F;计算只有受害者才能访问得到的数据（攻击者直接访问不到的数据），因此，这种类型的攻击还需要在受害者代码中找到可用的代码片（Code Gadget）。</li>
+<li><strong>Meltdown</strong> 类型的攻击是指：跟随在出错（Fault）指令之后的瞬态指令可以突破 ISA 层面的隔离屏障、绕过硬件安全策略（Hardware-enforced Security Policies）去访问&#x2F;计算应用程序在 ISA 层面无法访问到的数据（比如：内核数据等）。因此，该类型的攻击相比于 Spectre 类型的攻击更加强大。</li>
+</ol>
+<p align = "center">    
+    <img src="/image\papernotes\sec19-canella\Transient_execution_attack_class_tree.png" />
+</p>
+可演示攻击（红色、粗体）、不能运行攻击（绿色、虚线）、在这项工作中首先被探索（星号）
+
+<p align = "center">    
+    <img src="\image\papernotes\sec19-canella\SharedBranchPredictionState.png" />
+</p>
+一个分支可以被受害者进程（same-address-space）或攻击者控制的进程（cross-address-space）所误导。错误化可以使用脆弱的分支本身（in-place）来实现，也可以使用一致性虚拟地址的分支（out-of-place）来实现。
+
+<h4 id="Spectre-PHT-Input-Validation-Bypass"><a href="#Spectre-PHT-Input-Validation-Bypass" class="headerlink" title="Spectre-PHT (Input Validation Bypass)"></a>Spectre-PHT (Input Validation Bypass)</h4><p>利用预测条件分支结果的模式历史表Pattern History Table（PHT）。</p>
+<h4 id="Spectre-BTB-Branch-Target-Injection"><a href="#Spectre-BTB-Branch-Target-Injection" class="headerlink" title="Spectre-BTB (Branch Target Injection)"></a>Spectre-BTB (Branch Target Injection)</h4><p>利用分支目标缓冲区Branch Target Buffer（BTB）来预测分支目标地址。</p>
+<h4 id="Spectre-RSB-Return-Address-Injection"><a href="#Spectre-RSB-Return-Address-Injection" class="headerlink" title="Spectre-RSB (Return Address Injection)"></a>Spectre-RSB (Return Address Injection)</h4><p>主要利用返回堆栈缓冲区Return Stack Buffer（RSB）来预测返回地址。</p>
+<h4 id="Spectre-STL-Speculative-Store-Bypass"><a href="#Spectre-STL-Speculative-Store-Bypass" class="headerlink" title="Spectre-STL (Speculative Store Bypass)"></a>Spectre-STL (Speculative Store Bypass)</h4><p>利用内存消除歧义来预测存储加载Store To Load（STL）数据依赖关系。</p>
+<h4 id="Meltdown-US-Supervisor-only-Bypass"><a href="#Meltdown-US-Supervisor-only-Bypass" class="headerlink" title="Meltdown-US (Supervisor-only Bypass)"></a>Meltdown-US (Supervisor-only Bypass)</h4><p>最初的Meltdown攻击从cpu上不暂时强制执行用户&#x2F;主管标志的用户空间中读取内核内存。</p>
+<h4 id="Meltdown-P-Virtual-Translation-Bypass"><a href="#Meltdown-P-Virtual-Translation-Bypass" class="headerlink" title="Meltdown-P (Virtual Translation Bypass)"></a>Meltdown-P (Virtual Translation Bypass)</h4><p>Van Bulck等人提出了Foreshadow，一种针对英特尔SGX的Meltdown式攻击技术。</p>
+<h4 id="Meltdown-GP-System-Register-Bypass"><a href="#Meltdown-GP-System-Register-Bypass" class="headerlink" title="Meltdown-GP (System Register Bypass)"></a>Meltdown-GP (System Register Bypass)</h4><p>崩溃-GP（最初命名为Variant 3a）允许攻击者读取特权系统寄存器。</p>
+<h4 id="Meltdown-NM-FPU-Register-Bypass"><a href="#Meltdown-NM-FPU-Register-Bypass" class="headerlink" title="Meltdown-NM (FPU Register Bypass)"></a>Meltdown-NM (FPU Register Bypass)</h4><p>对CPU惰性状态切换机制的攻击，在上下文切换期间，操作系统必须保存所有的寄存器，包括浮点单元（FPU）和SIMD寄存器。后一种寄存器很大，保存它们会降低上下文切换的速度。因此，cpu允许一个惰性状态切换。</p>
+<h4 id="Meltdown-RW-Read-only-Bypass"><a href="#Meltdown-RW-Read-only-Bypass" class="headerlink" title="Meltdown-RW (Read-only Bypass)"></a>Meltdown-RW (Read-only Bypass)</h4><p>它绕过了当前进程中基于页面表的访问权限。</p>
+<h4 id="Meltdown-PK-Protection-Key-Bypass"><a href="#Meltdown-PK-Protection-Key-Bypass" class="headerlink" title="Meltdown-PK (Protection Key Bypass)"></a>Meltdown-PK (Protection Key Bypass)</h4><p>一种新的Meltdown攻击，以绕过由PKU（memory-protection keys for user space）提供的读和写隔离。</p>
+<h4 id="Meltdown-BR-Bounds-Check-Bypass"><a href="#Meltdown-BR-Bounds-Check-Bypass" class="headerlink" title="Meltdown-BR (Bounds Check Bypass)"></a>Meltdown-BR (Bounds Check Bypass)</h4><p>强调了在MPX边界检查指令之后引入内存lfence的必要性。</p>
+<h4 id="Residual-Meltdown-Negative-Results"><a href="#Residual-Meltdown-Negative-Results" class="headerlink" title="Residual Meltdown (Negative Results)"></a>Residual Meltdown (Negative Results)</h4><p>其他尚未测试过的异常的瞬态执行泄漏。</p>
+<h3 id="防御手段"><a href="#防御手段" class="headerlink" title="防御手段"></a>防御手段</h3><h4 id="Spectre-类型的防御"><a href="#Spectre-类型的防御" class="headerlink" title="Spectre 类型的防御"></a>Spectre 类型的防御</h4><p>C1: 缓解或减少使用隐蔽信道窃取秘密信息的准确度（Accuracy）<br>C2: 缓解或终止瞬态执行过程中对可访问数据的猜测<br>C3: 保证秘密信息不被访问</p>
+<h4 id="Meltdown-类型的防御"><a href="#Meltdown-类型的防御" class="headerlink" title="Meltdown 类型的防御"></a>Meltdown 类型的防御</h4><p>D1: 确保 ISA（指令集架构） 层面无法访问到的数据在微架构层面也无法访问<br>D2: 防止 Faults 的发生</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>整篇文章都围绕着瞬态执行攻击（Transient Execution Attack）进行展开，并解释了什么是瞬态执行（在 ISA 层面不可见，但是在微架构层面可见的指令执行方式），文中作者系统的对瞬态执行攻击进行分类和分析，并揭露了 6 个以前没有被人们所发现的瞬态执行攻击（2 个 Meltdown 类型和 4 个 Spectre 类型的变体）。此外，作者还对所有的攻击类型在三个主流的 CPU（AMD、Intel 和 ARM）上进行了概念验证（Proof-of-Concept），并在 Github 上给出了这些攻击的利用代码（POC），与此同时，还对产生这些漏洞的代码片（Gadget）进行了研究和分类，最后总结了各种攻击类型的防御措施，并评估了这些防御措施的性能开销等。</p>
+<p>这篇文章的内容太过丰富，量比较大，一下子难以吸收文中的所有知识点。如果需要往这方面继续研究，还需要阅读作者在文中引用的其它论文，这样才会更加深刻的理解每一个攻击方法以及对应的防御措施。</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>初夏</span>
+                    </p>
+                
+                
+                    <p class="copyright-item">
+                        <span>Permalink:</span>
+                        <span><a href="http://smallyi.github.io/2023/12/26/PaperNotes/sec19-canella/">http://smallyi.github.io/2023/12/26/PaperNotes/sec19-canella/</a></span>
+                    </p>
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/Spectre/"># Spectre</a>
+                    
+                        <a href="/tags/Meltdown/"># Meltdown</a>
+                    
+                        <a href="/tags/USENIX-Security/"># USENIX Security</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2023/12/20/BinaryCodeSimilarityDetection/thesis_research/">【论文调研】二进制代码相似性检测</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 初夏 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
