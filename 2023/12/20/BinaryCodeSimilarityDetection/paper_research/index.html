@@ -344,7 +344,45 @@
 <td align="center">arXiv 2023</td>
 </tr>
 </tbody></table>
-<h2 id="调研笔记"><a href="#调研笔记" class="headerlink" title="调研笔记"></a>调研笔记</h2><h3 id="1-Tracelet-based-code-search-in-executables"><a href="#1-Tracelet-based-code-search-in-executables" class="headerlink" title="[1] Tracelet-based code search in executables"></a>[1] Tracelet-based code search in executables</h3><h3 id="2-CVSSA-Cross-Architecture-Vulnerability-Search-in-Firmware-Based-on-Support-Vector-Machine-and-Attributed-Control-Flow-Graph"><a href="#2-CVSSA-Cross-Architecture-Vulnerability-Search-in-Firmware-Based-on-Support-Vector-Machine-and-Attributed-Control-Flow-Graph" class="headerlink" title="[2] CVSSA: Cross-Architecture Vulnerability Search in Firmware Based on Support Vector Machine and Attributed Control Flow Graph"></a>[2] CVSSA: Cross-Architecture Vulnerability Search in Firmware Based on Support Vector Machine and Attributed Control Flow Graph</h3><h3 id="3-Binary-code-clone-detection-across-architectures-and-compiling-configurations"><a href="#3-Binary-code-clone-detection-across-architectures-and-compiling-configurations" class="headerlink" title="[3] Binary code clone detection across architectures and compiling configurations"></a>[3] Binary code clone detection across architectures and compiling configurations</h3><h3 id="4-BinSim-Trace-based-Semantic-Binary-Diffing-via-System-Call-Sliced-Segment-Equivalence-Checking"><a href="#4-BinSim-Trace-based-Semantic-Binary-Diffing-via-System-Call-Sliced-Segment-Equivalence-Checking" class="headerlink" title="[4] BinSim: Trace-based Semantic Binary Diffing via System Call Sliced Segment Equivalence Checking"></a>[4] BinSim: Trace-based Semantic Binary Diffing via System Call Sliced Segment Equivalence Checking</h3><h3 id="5-Cross-architecture-bug-search-in-binary-executables"><a href="#5-Cross-architecture-bug-search-in-binary-executables" class="headerlink" title="[5] Cross-architecture bug search in binary executables"></a>[5] Cross-architecture bug search in binary executables</h3><h3 id="6-BinSequence-Fast-Accurate-and-Scalable-Binary-Code-Reuse-Detection"><a href="#6-BinSequence-Fast-Accurate-and-Scalable-Binary-Code-Reuse-Detection" class="headerlink" title="[6] BinSequence: Fast, Accurate and Scalable Binary Code Reuse Detection"></a>[6] BinSequence: Fast, Accurate and Scalable Binary Code Reuse Detection</h3><h3 id="7-Codee-A-Tensor-Embedding-Scheme-for-Binary-Code-Search（对比）"><a href="#7-Codee-A-Tensor-Embedding-Scheme-for-Binary-Code-Search（对比）" class="headerlink" title="[7] Codee: A Tensor Embedding Scheme for Binary Code Search（对比）"></a>[7] Codee: A Tensor Embedding Scheme for Binary Code Search（对比）</h3><h4 id="方法总结"><a href="#方法总结" class="headerlink" title="方法总结"></a>方法总结</h4><p align = "center">    
+<h2 id="调研笔记"><a href="#调研笔记" class="headerlink" title="调研笔记"></a>调研笔记</h2><h3 id="1-Tracelet-based-code-search-in-executables"><a href="#1-Tracelet-based-code-search-in-executables" class="headerlink" title="[1] Tracelet-based code search in executables"></a>[1] Tracelet-based code search in executables</h3><h4 id="方法总结"><a href="#方法总结" class="headerlink" title="方法总结"></a>方法总结</h4><p>使用了函数CFG部分执行流（即部分路径）的编辑距离来判断相似性。<br>为了计算剥离二进制形式的函数之间的相似性，我们将它们分解为<strong>轨迹集：连续的、短的、部分的执行轨迹</strong>。为了有效地比较跟踪集（一种在搜索过程中必须经常应用的操作），我们将它们的匹配编码为一个约束求解问题。这些约束捕获对齐约束和数据依赖关系，以匹配跟踪集之间的寄存器和内存地址。</p>
+<h4 id="局限"><a href="#局限" class="headerlink" title="局限"></a>局限</h4><ol>
+<li><strong>不同的优化级别</strong>：我们发现，在使用O1优化级别编译源代码时，得到的二进制文件可以用于查找O1、O2和O3版本。然而，O0和Os是非常不同的，并没有被发现。尽管如此，当我们拥有了我们想要找到的实例的源代码时，我们就可以用所有的优化级别来编译它，并逐个搜索它们。</li>
+<li><strong>跨域分配</strong>：一个常见的优化是用已经包含该值的寄存器替换一个即时值。我们的方法被设计为使每个符号只能用同一域中的另一个符号替换。我们的系统也可以搜索跨域赋值，但这将显著增加执行搜索的成本。此外，我们的实验表明，即使禁用这个选项，也有非常好的精度。</li>
+<li><strong>操作码替换</strong>：因为我们的方法要求比较指令的操作码在对齐阶段相同，如果编译器选择不同的操作码，匹配过程就会受到影响。我们的重写引擎可以扩展到允许常见的替换；然而，处理所有的指令选择转换可能需要一种不同的方法。</li>
+<li><strong>匹配小函数</strong>：我们的实验使用至少有100个基本块的函数。试图匹配较小的功能通常会产生不好的结果。这是因为我们需要覆盖完全的路径。一些路径非常常见（导致假阳性），而其他一些则的轻微变化可能导致其他路径无法消除的主要差异。此外，小的函数有时会内联。</li>
+<li><strong>处理内联函数</strong>：这在两种情况下都是一个问题，当目标函数内联时，以及当引用函数内部调用的函数内联到其中时。其中一些情况可以通过遏制标准化方法来进行处理，但只能在一定程度上进行处理。</li>
+<li><strong>重复代码的优化</strong>：代码重复以避免跳转，例如循环展开。与内联函数类似，当使用包含归一化方法时，我们的方法可以管理这些优化。</li>
+</ol>
+<h3 id="2-CVSSA-Cross-Architecture-Vulnerability-Search-in-Firmware-Based-on-Support-Vector-Machine-and-Attributed-Control-Flow-Graph"><a href="#2-CVSSA-Cross-Architecture-Vulnerability-Search-in-Firmware-Based-on-Support-Vector-Machine-and-Attributed-Control-Flow-Graph" class="headerlink" title="[2] CVSSA: Cross-Architecture Vulnerability Search in Firmware Based on Support Vector Machine and Attributed Control Flow Graph"></a>[2] CVSSA: Cross-Architecture Vulnerability Search in Firmware Based on Support Vector Machine and Attributed Control Flow Graph</h3><h4 id="方法总结-1"><a href="#方法总结-1" class="headerlink" title="方法总结"></a>方法总结</h4><p>作者提出了一种基于支持向量机（SVM）和属性控制流图（ACFG）的新方法，在功能级别上搜索不同架构中固件的已知漏洞。<br>我们使用一个已知的漏洞功能来识别其他二进制固件中的可疑功能。首先，从函数的内部和外部特征出发，<strong>提取出待测函数的函数级特征和基本块级特征</strong>。其次，我们使用<strong>SVM基于函数级特征来识别一小部分可疑功能</strong>。经过初步筛选，我们<strong>计算了漏洞函数和可疑函数与可疑函数之间的二部图相似度</strong>。</p>
+<h4 id="局限-1"><a href="#局限-1" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>首先，在我们的方法中，<strong>前提是每个漏洞都是由一个特定的函数引起的</strong>，即我们在函数级应用CVSSA。然而，在某些情况下，这些漏洞不仅由一个功能引起，而且还由其他一些与这些漏洞一起工作的功能引起。也有在某些情况下，漏洞只由一小部分代码引起，有时甚至由函数中的一个字符串常数引起。虽然我们的方法不能处理上面描述的情况，但它们只是少数情况，但功能级足以让我们处理大多数应用程序场景。</li>
+<li>在我们的方法中，<strong>没有评估标准来评估误警率</strong>。在我们所有的实验中，我们使用的所有测试数据都包含了与已知漏洞相匹配的特定可疑功能。然而，在某些情况下，我们发现的一些具有已知漏洞的函数并不是真正的匹配函数。这个问题将包括在我们今后的工作中。</li>
+<li>我们还将对一些<strong>不同的编译器和优化选项</strong>进行一些漏洞搜索工作。虽然本文没有提到它们，但它们对脆弱性搜索的准确性有重要影响。如果在我们进行检查之前，我们不仅可以知道体系结构，而且还能知道编译器，甚至是二进制固件的优化选项，那么毫无疑问，我们可以达到更高的精度。</li>
+<li>此外，我们还计划进一步解决动态链接库的问题。<strong>本文将动态链接库的函数相似性作为一个常数</strong>。通过分析要检查的函数所在的库文件，我们可以提取出这些函数的特征，并达到更高的精度。我们还将在未来将我们的方法应用于一个大型的固件映像数据集。</li>
+</ol>
+<h3 id="3-Binary-code-clone-detection-across-architectures-and-compiling-configurations"><a href="#3-Binary-code-clone-detection-across-architectures-and-compiling-configurations" class="headerlink" title="[3] Binary code clone detection across architectures and compiling configurations"></a>[3] Binary code clone detection across architectures and compiling configurations</h3><h4 id="方法总结-2"><a href="#方法总结-2" class="headerlink" title="方法总结"></a>方法总结</h4><p>我们提出了一种基于语义的方法来实现目标。我们识别每个二进制函数的参数和间接跳转目标，并<strong>模拟这些函数的执行</strong>，提取语义签名来度量函数的相似性。用于检测跨架构和编译配置的克隆二进制函数。</p>
+<h4 id="局限-2"><a href="#局限-2" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>依赖于模拟过程中确定的值，因此它不能处理使用随机算法实现的程序。此外，比较方法<strong>很容易受到代码混淆</strong>，特别是控制流混淆（例如，CFG扁平化、不透明谓词），这给比较操作数和条件码的签名带来了巨大的副作用。这也是静态分析中的一个重要问题。因此，如果要分析的二进制被混淆，首先需要去混淆。</li>
+<li><strong>专注于检测具有大量内存访问、逻辑分支和库函数调用的复杂函数</strong>。这些函数也是编译器优化的主要目标，这会导致结构缺口，而对于可能只有少数指令的简单函数，结构转换通常很小。</li>
+<li>在函数的开始，它可能检查输入的值，需要合法执行的特定值。CACOMPARE提供了具有<strong>随机值的函数，其通过检查的可能性较低</strong>，从而导致签名序列的长度较短。</li>
+</ol>
+<h3 id="4-BinSim-Trace-based-Semantic-Binary-Diffing-via-System-Call-Sliced-Segment-Equivalence-Checking"><a href="#4-BinSim-Trace-based-Semantic-Binary-Diffing-via-System-Call-Sliced-Segment-Equivalence-Checking" class="headerlink" title="[4] BinSim: Trace-based Semantic Binary Diffing via System Call Sliced Segment Equivalence Checking"></a>[4] BinSim: Trace-based Semantic Binary Diffing via System Call Sliced Segment Equivalence Checking</h3><h4 id="方法总结-3"><a href="#方法总结-3" class="headerlink" title="方法总结"></a>方法总结</h4><p>我们提出了一种系统调用切片段等价性检查，这一种混合方法来识别两个执行轨迹之间的细粒度语义异同。我们执行增强的动态切片和符号执行来比较影响可观察行为的指令的逻辑。改进了现有的基于语义的二进制差异，通过1)推断两个可执行二进制文件的行为是否有条件地相等；2)检测相似性或差异性，其影响分布在多个基本块上。</p>
+<h4 id="局限-3"><a href="#局限-3" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>与其他恶意软件动态分析方法一样，BinSim也有类似的限制： 1)不完全的路径覆盖；2)对环境敏感的恶意软件，它可以检测沙箱环境。因此BinSim只检测在执行过程中显示的异同。可能的解决方案是通过自动输入生成来探索更多的路径，并在一个透明的平台上分析恶意软件（例如，VMRay分析器）。</li>
+<li>BinSim的增强切片算法处理了可能破坏以块为中心的二进制比较的混淆。我们已经用一套复杂的商业混淆工具和先进的学术混淆方法来评估了BinSim。然而，确定的对手可能会小心地添加大量冗余的冗余依赖关系，从而导致切片大小爆炸，由此产生的最弱的先决条件可能会变得过于复杂而无法解决。</li>
+</ol>
+<h3 id="5-Cross-architecture-bug-search-in-binary-executables"><a href="#5-Cross-architecture-bug-search-in-binary-executables" class="headerlink" title="[5] Cross-architecture bug search in binary executables"></a>[5] Cross-architecture bug search in binary executables</h3><h4 id="方法总结-4"><a href="#方法总结-4" class="headerlink" title="方法总结"></a>方法总结</h4><p>首先将二进制代码转换为中间表示，从而得到带有输入和输出变量的赋值公式。然后，我们对具体输入进行采样，以观察基本块的I&#x2F;O行为，从而掌握它们的语义。最后，我们使用I&#x2F;O行为来查找行为与错误签名类似的代码部分，揭示了包含错误的代码部分。</p>
+<h4 id="局限-4"><a href="#局限-4" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>我们显式地将<strong>混淆</strong>的二进制文件排除在作用范围之外。</li>
+<li>我们在单个进程&#x2F;线程中执行了所有的实验，并且没有使用任何并行计算来加速实验。结果最好的算法，k-MinHash，<strong>使性能显著下降</strong>。当在大型二进制文件数据库中搜索多个签名时，这可能会成为一个问题。一个解决方案可能是首先运行计算成本更低的算法（例如，单个MinHash），然后用k-MinHash重新处理高排名。此外，大多数计算都可以通过直接的并行化来进行扩展。</li>
+</ol>
+<h3 id="6-BinSequence-Fast-Accurate-and-Scalable-Binary-Code-Reuse-Detection"><a href="#6-BinSequence-Fast-Accurate-and-Scalable-Binary-Code-Reuse-Detection" class="headerlink" title="[6] BinSequence: Fast, Accurate and Scalable Binary Code Reuse Detection"></a>[6] BinSequence: Fast, Accurate and Scalable Binary Code Reuse Detection</h3><h4 id="方法总结-5"><a href="#方法总结-5" class="headerlink" title="方法总结"></a>方法总结</h4><p>我们提出了一种模糊匹配的方法来比较两个函数。我们首先通过利用<strong>基本块级和执行路径级上的最长公共子序列</strong>的概念来获得基本块之间的初始映射。然后，我们使用邻域探索来扩展所实现的映射。为了使我们的方法适用于大数据集，我们设计了一个有效的使用明哈希的过滤过程。</p>
+<h4 id="局限-5"><a href="#局限-5" class="headerlink" title="局限"></a>局限</h4><ol>
+<li><strong>指令重新排序</strong>：编译器可能会改变对齐或管道化指令的顺序。当我们使用LCS来比较两个基本块时，我们就考虑了它们组成的指令的顺序。因此，这将降低最终的相似度得分，但不会危及整个排名。原因是在一个基本块内的指令的布局对应于源代码的布局。此外，一些指令可能会依赖于以前的指令。因此，编译器不能随机地改变顺序。我们仍然可以使用LCS捕获整个模式。</li>
+<li><strong>基本块重排序</strong>：类似地，基本块重排序降低了最终的相似度得分，因为我们在进行路径探索和邻域探索时考虑了顺序。但是，基本块的总体布局仍然对应于源代码。此外，一些基本块可能对以前的基本块有一些依赖性，因此，它们的顺序不能被更改。因此，我们的模糊匹配方法仍然可以捕获这些模式。</li>
+<li><strong>混淆</strong>：在设计BinSequence时，我们假设二进制序列是不混淆的。换句话说，BinSequence主要处理未混淆的代码。然而，我们也评估了双序列对混淆代码的鲁棒性。我们使用混淆器-llvm作为我们的混淆器，并实验了三种混淆技术：虚假的控制流、控制流扁平化和指令替换。控制流扁平化是BinSequence的一个挑战，因为我们考虑了cfg的结构。</li>
+</ol>
+<h3 id="7-Codee-A-Tensor-Embedding-Scheme-for-Binary-Code-Search（对比）"><a href="#7-Codee-A-Tensor-Embedding-Scheme-for-Binary-Code-Search（对比）" class="headerlink" title="[7] Codee: A Tensor Embedding Scheme for Binary Code Search（对比）"></a>[7] Codee: A Tensor Embedding Scheme for Binary Code Search（对比）</h3><h4 id="方法总结-6"><a href="#方法总结-6" class="headerlink" title="方法总结"></a>方法总结</h4><p align = "center">    
 <img src="/image\BCSD\codee_overview.png"/>
 </p>
 
@@ -363,7 +401,21 @@
 <li>bb+function嵌入部分需要迭代训练，见代码仓库 <em>&#x2F;function embedding</em></li>
 <li>tensor嵌入部分需要tSVD分解（用到matlab复现复杂），见代码仓库 <em>&#x2F;Tensor embedding</em><br><strong>相关工作已添加引用，首先尝试复现原文源码，其次尝试用python的张量处理仓库近似该方法</strong></li>
 </ol>
-<h3 id="8-Blanket-Execution-Dynamic-Similarity-Testing-for-Program-Binaries-and-Components"><a href="#8-Blanket-Execution-Dynamic-Similarity-Testing-for-Program-Binaries-and-Components" class="headerlink" title="[8] Blanket Execution: Dynamic Similarity Testing for Program Binaries and Components"></a>[8] Blanket Execution: Dynamic Similarity Testing for Program Binaries and Components</h3><h3 id="9-Enhancing-DNN-Based-Binary-Code-Function-Search-With-Low-Cost-Equivalence-Checking（对比）"><a href="#9-Enhancing-DNN-Based-Binary-Code-Function-Search-With-Low-Cost-Equivalence-Checking（对比）" class="headerlink" title="[9] Enhancing DNN-Based Binary Code Function Search With Low-Cost Equivalence Checking（对比）"></a>[9] Enhancing DNN-Based Binary Code Function Search With Low-Cost Equivalence Checking（对比）</h3><h4 id="方法总结-1"><a href="#方法总结-1" class="headerlink" title="方法总结"></a>方法总结</h4><p>函数功能等价性检查</p>
+<h3 id="8-Blanket-Execution-Dynamic-Similarity-Testing-for-Program-Binaries-and-Components"><a href="#8-Blanket-Execution-Dynamic-Similarity-Testing-for-Program-Binaries-and-Components" class="headerlink" title="[8] Blanket Execution: Dynamic Similarity Testing for Program Binaries and Components"></a>[8] Blanket Execution: Dynamic Similarity Testing for Program Binaries and Components</h3><h4 id="方法总结-7"><a href="#方法总结-7" class="headerlink" title="方法总结"></a>方法总结</h4><p>我们提出了覆盖执行，一种新的动态等价测试原语，通过覆盖预期的程序逻辑来实现完整的覆盖。覆盖执行收集在受控随机环境下执行功能的副作用。如果在相同环境下观察到的副作用是相似的，则被认为是相似的。<br>全局执行运行在环境env下的给定地址i处开始执行函数，只对目标函数进行覆盖执行，保证该函数所有指令均被执行（覆盖率）<br>以下特征被证明对建立函数的二进制相似性是有用的：</p>
+<ol>
+<li>从程序堆中读取的值（v1）</li>
+<li>写入程序堆的值（v2）</li>
+<li>从程序栈中读取的值（v3）</li>
+<li>写入程序栈的值（v4）</li>
+<li>对plt导入的库函数的调用</li>
+<li>在执行期间进行的系统调用</li>
+<li>在所分析的功能完成后，返回存储在%rax寄存器中的值</li>
+</ol>
+<h4 id="局限-6"><a href="#局限-6" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>动态执行的效率问题</li>
+<li>只评估了3种编译器和4种优化等级，没有评估不同架构以及混淆的影响</li>
+</ol>
+<h3 id="9-Enhancing-DNN-Based-Binary-Code-Function-Search-With-Low-Cost-Equivalence-Checking（对比）"><a href="#9-Enhancing-DNN-Based-Binary-Code-Function-Search-With-Low-Cost-Equivalence-Checking（对比）" class="headerlink" title="[9] Enhancing DNN-Based Binary Code Function Search With Low-Cost Equivalence Checking（对比）"></a>[9] Enhancing DNN-Based Binary Code Function Search With Low-Cost Equivalence Checking（对比）</h3><h4 id="方法总结-8"><a href="#方法总结-8" class="headerlink" title="方法总结"></a>方法总结</h4><p>函数功能等价性检查</p>
 <p align = "center">    
 <img src="/image\BCSD/BinUSE_workflow.png"/>
 </p>
@@ -395,12 +447,62 @@
 <p>然而，由于BinUSE只访问和重新排序按DNN模型排名的前K个函数，增强的top-k精度（其中k&#x3D;100）受到DNN模型的前100个精度的限制。换句话说，如果目标DNN模型即使是前100名的精度也较低，那么提高它的机会就很小。</p>
 <p>全文没有提匹配池的大小对Top-K指标的影响！</p>
 <p>这并不是一个端到端的二进制函数搜索方法，而是在已有候选函数列表后的，进一步更准确的语义相似性验证。考虑不需要对比该方法。</p>
-<h3 id="10-A-Review-of-Deep-Learning-Based-Binary-Code-Similarity-Analysis"><a href="#10-A-Review-of-Deep-Learning-Based-Binary-Code-Similarity-Analysis" class="headerlink" title="[10] A Review of Deep Learning-Based Binary Code Similarity Analysis"></a>[10] A Review of Deep Learning-Based Binary Code Similarity Analysis</h3><h3 id="11-HEBCS-A-High-Efficiency-Binary-Code-Search-Method"><a href="#11-HEBCS-A-High-Efficiency-Binary-Code-Search-Method" class="headerlink" title="[11] HEBCS. A High-Efficiency Binary Code Search Method"></a>[11] HEBCS. A High-Efficiency Binary Code Search Method</h3><h3 id="12-VulHawk-Cross-architecture-Vulnerability-Detection-with-Entropy-based-Binary-Code-Search（对比）"><a href="#12-VulHawk-Cross-architecture-Vulnerability-Detection-with-Entropy-based-Binary-Code-Search（对比）" class="headerlink" title="[12] VulHawk. Cross-architecture Vulnerability Detection with Entropy-based Binary Code Search（对比）"></a>[12] VulHawk. Cross-architecture Vulnerability Detection with Entropy-based Binary Code Search（对比）</h3><h4 id="方法总结-2"><a href="#方法总结-2" class="headerlink" title="方法总结"></a>方法总结</h4><p align = "center">    
+<h3 id="10-A-Review-of-Deep-Learning-Based-Binary-Code-Similarity-Analysis"><a href="#10-A-Review-of-Deep-Learning-Based-Binary-Code-Similarity-Analysis" class="headerlink" title="[10] A Review of Deep Learning-Based Binary Code Similarity Analysis"></a>[10] A Review of Deep Learning-Based Binary Code Similarity Analysis</h3><h4 id="方法总结-9"><a href="#方法总结-9" class="headerlink" title="方法总结"></a>方法总结</h4><p>本研究从2016-2022年人工智能、网络安全、软件工程等领域的顶级会议中选取了39篇关于BCSA的论文进行深度分析。中心重点是利用深度学习技术的方法，<strong>详细介绍了各种深度学习技术的应用和实现细节的全面总结和安排</strong>。此外，本研究还总结了该领域的研究模式和发展趋势，从而为未来的研究提出了潜在的发展方向。</p>
+<h4 id="局限-7"><a href="#局限-7" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>综述性文章，指出了一些研究现状和趋势，但没有给出评估结论比如说哪种方法更有效</li>
+</ol>
+<h3 id="11-HEBCS-A-High-Efficiency-Binary-Code-Search-Method"><a href="#11-HEBCS-A-High-Efficiency-Binary-Code-Search-Method" class="headerlink" title="[11] HEBCS. A High-Efficiency Binary Code Search Method"></a>[11] HEBCS. A High-Efficiency Binary Code Search Method</h3><h4 id="方法总结-10"><a href="#方法总结-10" class="headerlink" title="方法总结"></a>方法总结</h4><p>它采用<strong>可解释</strong>的方法提取函数级特征，并将每个特征转换为局部敏感的哈希表示。然后，将这些特性的哈希值组合起来，形成函数的哈希值。通过利用鸽子洞原理，HEBCS实现了高效的功能存储和检索，确保即使在存在大规模数据的情况下的高执行效率。<br>HEBCS的实现包括三个主要步骤。给定一个输入的二进制函数和一个二进制代码数据库，<strong>第一步是从它们中提取特征。我们的方法通过提取指令特征、语法特征和结构特征这三种不同类型的特征来全面地表征函数</strong>。为了实现大规模函数的表示和存储，<strong>将这三种类型的函数特征融合并转换为函数的特征散列</strong>。这些哈希可以唯一地表示一个函数，相似的二进制函数的哈希值也很相似。然后，<strong>计算给定的二进制函数与代码数据库中每个函数的哈希之间的汉明距离</strong>。最后，如果代码数据库中的哈希与给定目标的哈希之间的汉明距离大于阈值，则此函数将作为一个类似的函数输出。</p>
+<h4 id="局限-8"><a href="#局限-8" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>利用哈希算法和特征加权算法对特征进行组合，将二值函数转换为局部敏感的哈希值，并通过抽屉原理有效地搜索哈希值。与先进的机器学习方法相比，该方法在查询效率方面具有显著的优势，但<strong>在准确性和召回率方面仍存在轻微的差距</strong>。</li>
+<li>当相似的函数通过<strong>不同的编译优化使用不同的编译器并使用不同的指令集时</strong>，二进制函数会发生很大的变化。在撰写本文时，该方法的准确性并没有预期的那么好。</li>
+</ol>
+<h3 id="12-VulHawk-Cross-architecture-Vulnerability-Detection-with-Entropy-based-Binary-Code-Search（对比）"><a href="#12-VulHawk-Cross-architecture-Vulnerability-Detection-with-Entropy-based-Binary-Code-Search（对比）" class="headerlink" title="[12] VulHawk. Cross-architecture Vulnerability Detection with Entropy-based Binary Code Search（对比）"></a>[12] VulHawk. Cross-architecture Vulnerability Detection with Entropy-based Binary Code Search（对比）</h3><h4 id="方法总结-11"><a href="#方法总结-11" class="headerlink" title="方法总结"></a>方法总结</h4><p align = "center">    
 <img src="/image\BCSD/VulHawk_overview.png"/>
 </p>
 
 <p>作者提出了一种跨架构的二进制代码搜索方法VulHawk。它包含了一个<strong>基于RoBERTa和GCNs的中间表示函数模型，用于生成函数嵌入</strong>。为了提高对不同文件环境的鲁棒性，我们提出了一种分治策略，并从信息理论的角度引入熵来识别二进制代码的文件环境。作者提出了一个<strong>基于熵的适配器，将函数嵌入传输到相同的中间文件环境中，以缓解由不同的编译器、优化和架构造成的差异</strong>。在渐进式搜索策略中，相似度校准<strong>使用细粒度级别的特征来补充漏洞检测，以减少由补丁函数引起的误报</strong>。广泛的评估表明，VulHawk在七个任务上优于最先进的方法。分而治之策略有效地提高了VulHawk对编译器、优化级别和体系结构的鲁棒性。为期1天的漏洞检测实验表明，VulHawk具有较高的漏洞检测性能。</p>
-<h4 id="复现-2"><a href="#复现-2" class="headerlink" title="复现"></a>复现</h4><h3 id="13-Multi-semantic-feature-fusion-attention-network-for-binary-code-similarity-detection"><a href="#13-Multi-semantic-feature-fusion-attention-network-for-binary-code-similarity-detection" class="headerlink" title="[13] Multi-semantic feature fusion attention network for binary code similarity detection"></a>[13] Multi-semantic feature fusion attention network for binary code similarity detection</h3><h3 id="14-Binary-Code-Representation-With-Well-Balanced-Instruction-Normalization"><a href="#14-Binary-Code-Representation-With-Well-Balanced-Instruction-Normalization" class="headerlink" title="[14] Binary Code Representation With Well-Balanced Instruction Normalization"></a>[14] Binary Code Representation With Well-Balanced Instruction Normalization</h3><h3 id="15-SemDiff-Binary-Similarity-Detection-by-Diffing-Key-Semantics-Graphs"><a href="#15-SemDiff-Binary-Similarity-Detection-by-Diffing-Key-Semantics-Graphs" class="headerlink" title="[15] SemDiff: Binary Similarity Detection by Diffing Key-Semantics Graphs"></a>[15] SemDiff: Binary Similarity Detection by Diffing Key-Semantics Graphs</h3><h3 id="16-VulMatch-Binary-level-Vulnerability-Detection-Through-Signature"><a href="#16-VulMatch-Binary-level-Vulnerability-Detection-Through-Signature" class="headerlink" title="[16] VulMatch: Binary-level Vulnerability Detection Through Signature"></a>[16] VulMatch: Binary-level Vulnerability Detection Through Signature</h3>
+<h4 id="复现-2"><a href="#复现-2" class="headerlink" title="复现"></a>复现</h4><h3 id="13-Multi-semantic-feature-fusion-attention-network-for-binary-code-similarity-detection"><a href="#13-Multi-semantic-feature-fusion-attention-network-for-binary-code-similarity-detection" class="headerlink" title="[13] Multi-semantic feature fusion attention network for binary code similarity detection"></a>[13] Multi-semantic feature fusion attention network for binary code similarity detection</h3><h4 id="方法总结-12"><a href="#方法总结-12" class="headerlink" title="方法总结"></a>方法总结</h4><p>本文提出了一种基于BCSD的多语义特征融合注意网络（MFFA-Net）。MFFA-Net包含两个关键模块：<strong>语义特征融合（SFF）和注意特征融合（AFF）</strong>。SFF模块连接多个语义特征来表示函数的语义，这有助于获得函数的整体语义信息。AFF模块旨在从各种特征中获取有用的信息，并分配一个注意力矩阵来研究特征之间的关系。</p>
+<h4 id="局限-9"><a href="#局限-9" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>该方法只是在SAFE方法上的扩展，相比SAFE方法的优势并不明显，准确率并没有提升多少。虽然在训练时间上缩短了，但增加了推理过程的时间。模型和评估都是基于SAFE，没有和最新的SOTA方法对比。</li>
+<li>不支持混淆和跨架构</li>
+</ol>
+<h3 id="14-Binary-Code-Representation-With-Well-Balanced-Instruction-Normalization"><a href="#14-Binary-Code-Representation-With-Well-Balanced-Instruction-Normalization" class="headerlink" title="[14] Binary Code Representation With Well-Balanced Instruction Normalization"></a>[14] Binary Code Representation With Well-Balanced Instruction Normalization</h3><h4 id="方法总结-13"><a href="#方法总结-13" class="headerlink" title="方法总结"></a>方法总结</h4><p>在本文中，我们引入了良好平衡的<strong>指令标准化 well-balanced instruction normalization（WIN）</strong>，这是一种新的方法，它保留了丰富的代码信息，同时最小化代码规范化的缺点。主要用于基于NLP的二进制相似性分析方法（比如BERT），为了解决OOV问题对指令进行标准化，同时尽可能保留更多语义信息，比如寄存器区分size，立即数区分来源类型，函数调用区分内部函数和外部函数。</p>
+<h4 id="局限-10"><a href="#局限-10" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>当前版本的DeepSemanticis设计仅为处理良性二进制文件，因此，可能<strong>不是直接适用的恶意软件，通常附带各种包装、混淆或加密</strong>。</li>
+<li>其次，我们还已经测试了DeepSemanticis跨架构场景的性能，我们将其作为未来工作的一部分。</li>
+<li>虽然很少见，但两个不同的函数在归一化后可能有相同的指令，这可能会导致当前的DeepSemanticis模型的混淆。</li>
+</ol>
+<h3 id="15-SemDiff-Binary-Similarity-Detection-by-Diffing-Key-Semantics-Graphs"><a href="#15-SemDiff-Binary-Similarity-Detection-by-Diffing-Key-Semantics-Graphs" class="headerlink" title="[15] SemDiff: Binary Similarity Detection by Diffing Key-Semantics Graphs"></a>[15] SemDiff: Binary Similarity Detection by Diffing Key-Semantics Graphs</h3><h4 id="方法总结-14"><a href="#方法总结-14" class="headerlink" title="方法总结"></a>方法总结</h4><p>我们观察到，所有的情况都没有改变二进制文件的关键代码行为，尽管它们显著地改变了它的语法和结构。通过这个关键观察，我们从二进制文件中提取一组<strong>关键指令来捕获其关键代码行为</strong>。通过检测两个二进制文件的关键指令之间的相似性，我们可以很好地解决现有工作的无效局限性。具体来说，我们将每个提取的键指令转换为一个自定义的键表达式，并基于二进制文件的控制流生成一个<strong>键-语义图</strong>。<br>键语义图中的每个节点表示一个键指令，节点属性是键表达式。为了量化两个给定的关键语义图之间的相似性，我们首先<strong>通过拓扑排序将每个图序列化为一个关键表达式序列</strong>。<br>然后，我们将令牌化并连接键表达式以生成令牌列表。我们<strong>计算所有令牌列表的局部性敏感哈希值</strong>，并量化它们的相似性。</p>
+<ol>
+<li>我们提出了一种新的语义感知的二进制相似度检测方法。我们通过只选择关键指令来抽象二进制代码，然后执行符号执行来提取指令相关性，以便进一步分析。该方法通过保留最基本的指令及其相应的语义信息，有效地简化了二进制代码。</li>
+<li>我们提出了一种将指令摘要转换为图的方法。为了实现准确的比较，我们提出了一种基于LSH的方法，将一个图转换为一个序列，以进行最终的相似度计算。这种方法可以应用于各种场景（例如，漏洞搜索和恶意软件检测）。</li>
+</ol>
+<p>通过人工检查，我们将关键指令分为四种类型：调用行为、比较方式、间接分支和内存存储。</p>
+<ol>
+<li>调用行为。它表示一个调用指令，它将由以前的指令操作的操作数作为函数参数。</li>
+<li>比较方式。它是一个具有比较目标的操作数的指令。与操作符的指令，如cmp，测试将影响在一个关节点执行的后续分支。</li>
+<li>间接分支。它表示具有目标地址（例如jmp eax）的指令。</li>
+<li>内存存储。该指令用来存储值或内存地址（例如，mov [edx]、ebx)。</li>
+</ol>
+<p>我们认为至少有5个基本块的函数，是由于小于5个块的函数不太可能包含bug，因此对相似性检测不太感兴趣。</p>
+<h4 id="局限-11"><a href="#局限-11" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>关键表达准确性：缺乏对较少频率操作码的支持会降低精度。因此，更完整的助记符支持可以提高更高的准确性。由于所有助记符的时间限制和复杂性，我们的当前版本只支持最常用的助记符</li>
+<li>在关键表达式简化方面，SemDiff使用了msynth，这可能存在时间效率和准确性问题。</li>
+<li>对于FLA控制流扁平化混淆方法的效果不好，因为它通过扁平化控制流引入了更多的语法和控制流变化。故障案例是由新添加的关键指令混淆造成的。</li>
+<li>同等考虑键表达式中每个标记的重要性。此外，对于每一种关键指令，我们也认为它们具有同等的重要性。然而，一些令牌和关键指令应该比其他的更重要。例如，长即时值的匹配应该比匹配一些频繁的操作符号，如∗，表示更多的相似性。将两个调用类型键指令匹配用四个参数应该包含多个参数。如果准备了足够的训练数据，机器学习可以学习每个令牌和密钥指令类型的权重。</li>
+<li>关键表达式依赖于指令架构，不支持跨架构</li>
+</ol>
+<h3 id="16-VulMatch-Binary-level-Vulnerability-Detection-Through-Signature"><a href="#16-VulMatch-Binary-level-Vulnerability-Detection-Through-Signature" class="headerlink" title="[16] VulMatch: Binary-level Vulnerability Detection Through Signature"></a>[16] VulMatch: Binary-level Vulnerability Detection Through Signature</h3><h4 id="方法总结-15"><a href="#方法总结-15" class="headerlink" title="方法总结"></a>方法总结</h4><p>VulMatch基于二进制签名检测漏洞的存在。与以前的方法不同，VulMatch通过<strong>利用源代码和二进制代码</strong>准确地定位与漏洞相关的指令。</p>
+<p>上下文指的是脆弱的二进制指令的相邻块的指令。易受攻击的二进制指令通常很短。如果我们通过简单地将这些指令连接到一个序列中来生成签名，那么签名可能会携带不足够的信息，以防止假阳性。因此，我们建议<strong>通过结合上下文和脆弱的指令来形成新的结构</strong>。我们的新组合结构给出了签名足够的唯一性，以提高签名匹配的性能。我们建议通过泛化来围绕脆弱的签名指令构建上下文，以减少误报。</p>
+<p>我们提出的产生脆弱二进制签名的方法的输入为： 1) CVE信息，包括最后一个易受攻击的版本、第一个补丁版本和易受攻击的函数名。2)具有不同版本的源代码。然后，在查询阶段，输入可以是一个未知的二进制代码，而无需调试信息和源代码。输出是一个具有相似性得分的潜在匹配的cve的列表。</p>
+<p>在不同的输出中有三种类型的源代码级补丁。1)添加了在补丁版本中使用而在有漏洞的版本中不使用的说明。2)删除从易受攻击版本中删除的补丁版本中没有的指令。3)更改了从易受攻击的版本更新到已打补丁的版本的指令。更改后的指令通常在两个版本中共享相同的上下文指令。</p>
+<p>挑战2：识别特定于漏洞的源线。添加类型签名很难进行表示。因为添加类型签名只存在于补丁版本中，所以添加的说明意味着存在一个补丁，而不是漏洞本身。因此，来自脆弱的版本没有直接的脆弱指令。然而，其他随机函数可能缺乏添加的指令，而没有同样的漏洞。因此，缺少添加的指令不能直接作为易受攻击的签名使用。我们需要在脆弱版本中的漏洞签名，以检测漏洞的存在。</p>
+<h4 id="局限-12"><a href="#局限-12" class="headerlink" title="局限"></a>局限</h4><ol>
+<li>需要源代码：<strong>同时需要源代码和二进制代码来提取签名</strong>。[43]-[45]声称，这三种工具都只需要二进制代码，但它们需要所有与漏洞相关的二进制代码版本，并且二进制代码必须使用相同的优化标志进行编译。这个假设很强，因为我们不能保证他从野外收集的二进制版本(s)是用相同的选项编译的。因此，在实际实现中，它们仍然需要源代码来生成不同的二进制代码，并使用相同的优化选项，从中提取签名。（实验评估过程需要源码来保证相同编译等级的前提，并非是提取签名的过程需要源码的知识，强词夺理有点）</li>
+<li>交叉体系结构： <strong>VulMatch只研究同一体系结构上存在漏洞和修补补丁的代码</strong>。但是，相同的源代码可以在不同的硬件架构上编译（例如，ARM、x32、PowerPC等）</li>
+<li>编译所引入的差异：一个重要的挑战是减轻由不同的编译优化设置、不同的编译器和不同的编译器版本所带来的指令差异。本文<strong>只考虑了项目的默认优化选项和我们的测试系统的默认编译器</strong>。可以在野外观察使用不同的优化级别或编译器编译的二进制文件。一个合理的解决方案是利用符号执行来减轻不同优化级别的影响。但是，符号执行在执行上很耗时。</li>
+</ol>
+
         </div>
 
         
