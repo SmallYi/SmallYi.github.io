@@ -399,7 +399,7 @@
 <h4 id="复现"><a href="#复现" class="headerlink" title="复现"></a>复现</h4><ol>
 <li>token嵌入部分需要随机游走skip-gram训练（tensorflow复现起来复杂）见代码仓库 <em>&#x2F;Token embedding</em></li>
 <li>bb+function嵌入部分需要迭代训练，见代码仓库 <em>&#x2F;function embedding</em></li>
-<li>tensor嵌入部分需要tSVD分解（用到matlab复现复杂），见代码仓库 <em>&#x2F;Tensor embedding</em><br><strong>相关工作已添加引用，首先尝试复现原文源码，其次尝试用python的张量处理仓库近似该方法</strong></li>
+<li>tensor嵌入部分需要tSVD分解（用到matlab复现复杂），见代码仓库 <em>&#x2F;Tensor embedding</em><br><strong>相关工作已添加引用，首先尝试复现原文源码，其次尝试用python的张量处理仓库近似该方法</strong><br>已复现步骤1和2，其中步骤1每次输入一个二进制文件（根据现实环境中的测试流程），步骤3的tsvd分解还未复现完成，目前使用步骤2生成的函数嵌入进行测试，效果较差！</li>
 </ol>
 <h3 id="8-Blanket-Execution-Dynamic-Similarity-Testing-for-Program-Binaries-and-Components"><a href="#8-Blanket-Execution-Dynamic-Similarity-Testing-for-Program-Binaries-and-Components" class="headerlink" title="[8] Blanket Execution: Dynamic Similarity Testing for Program Binaries and Components"></a>[8] Blanket Execution: Dynamic Similarity Testing for Program Binaries and Components</h3><h4 id="方法总结-7"><a href="#方法总结-7" class="headerlink" title="方法总结"></a>方法总结</h4><p>我们提出了覆盖执行，一种新的动态等价测试原语，通过覆盖预期的程序逻辑来实现完整的覆盖。覆盖执行收集在受控随机环境下执行功能的副作用。如果在相同环境下观察到的副作用是相似的，则被认为是相似的。<br>全局执行运行在环境env下的给定地址i处开始执行函数，只对目标函数进行覆盖执行，保证该函数所有指令均被执行（覆盖率）<br>以下特征被证明对建立函数的二进制相似性是有用的：</p>
 <ol>
@@ -461,7 +461,12 @@
 </p>
 
 <p>作者提出了一种跨架构的二进制代码搜索方法VulHawk。它包含了一个<strong>基于RoBERTa和GCNs的中间表示函数模型，用于生成函数嵌入</strong>。为了提高对不同文件环境的鲁棒性，我们提出了一种分治策略，并从信息理论的角度引入熵来识别二进制代码的文件环境。作者提出了一个<strong>基于熵的适配器，将函数嵌入传输到相同的中间文件环境中，以缓解由不同的编译器、优化和架构造成的差异</strong>。在渐进式搜索策略中，相似度校准<strong>使用细粒度级别的特征来补充漏洞检测，以减少由补丁函数引起的误报</strong>。广泛的评估表明，VulHawk在七个任务上优于最先进的方法。分而治之策略有效地提高了VulHawk对编译器、优化级别和体系结构的鲁棒性。为期1天的漏洞检测实验表明，VulHawk具有较高的漏洞检测性能。</p>
-<h4 id="复现-2"><a href="#复现-2" class="headerlink" title="复现"></a>复现</h4><h3 id="13-Multi-semantic-feature-fusion-attention-network-for-binary-code-similarity-detection"><a href="#13-Multi-semantic-feature-fusion-attention-network-for-binary-code-similarity-detection" class="headerlink" title="[13] Multi-semantic feature fusion attention network for binary code similarity detection"></a>[13] Multi-semantic feature fusion attention network for binary code similarity detection</h3><h4 id="方法总结-12"><a href="#方法总结-12" class="headerlink" title="方法总结"></a>方法总结</h4><p>本文提出了一种基于BCSD的多语义特征融合注意网络（MFFA-Net）。MFFA-Net包含两个关键模块：<strong>语义特征融合（SFF）和注意特征融合（AFF）</strong>。SFF模块连接多个语义特征来表示函数的语义，这有助于获得函数的整体语义信息。AFF模块旨在从各种特征中获取有用的信息，并分配一个注意力矩阵来研究特征之间的关系。</p>
+<h4 id="复现-2"><a href="#复现-2" class="headerlink" title="复现"></a>复现</h4><p><strong>尝试复现失败</strong></p>
+<ol>
+<li>提供的源码不完整：3_function_embedding_generation.py 脚本依赖于 xxx.pkl&#x2F;xxx.fcg.dat&#x2F;xxx.cmp.dat文件，但生成这些文件的脚本未提供，尝试用自己提取的函数特征迁移到作者提供的xxx.pkl文件格式，但处理基本块指令的关键代码缺失，处理xxx.pkl的代码是编译后的二进制无法调试！</li>
+<li>没有提供数据集：虽然作者论文中说数据集也公开了，但在github仓库中并没有数据集相关内容，无法将我们的方法用到该论文数据集上！</li>
+</ol>
+<h3 id="13-Multi-semantic-feature-fusion-attention-network-for-binary-code-similarity-detection"><a href="#13-Multi-semantic-feature-fusion-attention-network-for-binary-code-similarity-detection" class="headerlink" title="[13] Multi-semantic feature fusion attention network for binary code similarity detection"></a>[13] Multi-semantic feature fusion attention network for binary code similarity detection</h3><h4 id="方法总结-12"><a href="#方法总结-12" class="headerlink" title="方法总结"></a>方法总结</h4><p>本文提出了一种基于BCSD的多语义特征融合注意网络（MFFA-Net）。MFFA-Net包含两个关键模块：<strong>语义特征融合（SFF）和注意特征融合（AFF）</strong>。SFF模块连接多个语义特征来表示函数的语义，这有助于获得函数的整体语义信息。AFF模块旨在从各种特征中获取有用的信息，并分配一个注意力矩阵来研究特征之间的关系。</p>
 <h4 id="局限-9"><a href="#局限-9" class="headerlink" title="局限"></a>局限</h4><ol>
 <li>该方法只是在SAFE方法上的扩展，相比SAFE方法的优势并不明显，准确率并没有提升多少。虽然在训练时间上缩短了，但增加了推理过程的时间。模型和评估都是基于SAFE，没有和最新的SOTA方法对比。</li>
 <li>不支持混淆和跨架构</li>
