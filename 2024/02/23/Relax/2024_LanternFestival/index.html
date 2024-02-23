@@ -168,15 +168,29 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/animejs"></script> -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <link rel="stylesheet" href="/js/lantern/lantern.css">
+    
 </head>
+
 
 <body>
 
 <!-- 小鱼 -->
+<!--定义底部承载游动小鱼特效的div样式开始-->
+<style type="text/css">
+    .fishcontainer{
+        margin:0;
+        padding:0;
+        background-color:#F64858;
+        width:100%;
+        height:300px;
+    }
+</style>
+<!--定义底部承载游动小鱼特效的div样式结束-->
 <!--承载游动小鱼特效的div容器-->
-<!-- <div id="jsi-flying-fish-container" class="container"></div> -->
+<div id="jsi-flying-fish-container" class="fishcontainer"></div>
+
 <!--核心特效定义js-->
-<!-- <script src='/js/fish/fish.js'></script> -->
+<script src='/js/fish/fish.js'></script>
 
 <!-- 灯笼 -->
 <div class="content">
