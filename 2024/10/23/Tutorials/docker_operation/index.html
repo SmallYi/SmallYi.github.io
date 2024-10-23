@@ -263,6 +263,11 @@
 <li>更新镜像</li>
 </ol>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 显示容器中进行的任何更改，例如添加，删除或修改的文件</span></span><br><span class="line">docker diff containerID</span><br><span class="line"><span class="comment"># 用commit把改动的容器保存成一个新的镜像</span></span><br><span class="line">docker commit -m <span class="string">&quot;msg&quot;</span> containerID repository_name:tag</span><br><span class="line"><span class="comment"># 查看镜像</span></span><br><span class="line">docker image <span class="built_in">ls</span></span><br><span class="line"><span class="comment"># 上传镜像，见上文</span></span><br><span class="line"><span class="comment"># 删除镜像</span></span><br><span class="line">docker rmi image-id</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>本地保存与加载镜像</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 保存镜像为 tar 文件</span></span><br><span class="line"><span class="comment"># myimage:tag  是要保存的镜像名称和标签， myimage.tar  是输出的 tar 文件名</span></span><br><span class="line">docker save -o myimage.tar myimage:tag</span><br><span class="line"><span class="comment"># 加载 tar 文件为镜像</span></span><br><span class="line"><span class="comment">#  -i  指定了输入文件</span></span><br><span class="line">docker load -i myimage.tar</span><br></pre></td></tr></table></figure>
         </div>
 
         
