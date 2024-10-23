@@ -229,7 +229,7 @@
 <h2 id="创建镜像并上传下载"><a href="#创建镜像并上传下载" class="headerlink" title="创建镜像并上传下载"></a>创建镜像并上传下载</h2><ol>
 <li>本地创建&#x2F;封装自己的镜像</li>
 </ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个本地标记为 &lt;image_name&gt; 的镜像。其中 : 表示版本号或者标签名称，. 表示当前目录。</span></span><br><span class="line">docker build -t &lt;image_name&gt;:&lt;tag&gt;</span><br><span class="line"><span class="comment"># 例如</span></span><br><span class="line">docker build --no-cache  -t tts:v0.1 -f ./Dockerfile .</span><br></pre></td></tr></table></figure>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建一个本地标记为 &lt;image_name&gt; 的镜像。其中 : 表示版本号或者标签名称，. 表示当前目录。</span></span><br><span class="line">docker build -t &lt;image_name&gt;:&lt;tag&gt;</span><br><span class="line"><span class="comment"># 例如</span></span><br><span class="line">docker build --no-cache -t tts:v0.1 -f ./Dockerfile .</span><br></pre></td></tr></table></figure>
 
 <ol start="2">
 <li><p><a target="_blank" rel="noopener" href="https://hub.docker.com/">HUB网站</a>登录Docker Hub账户，创建一个新仓库Create repository -&gt; 输入仓库名Repository Name -&gt; 创建Create</p>
